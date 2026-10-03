@@ -13,6 +13,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
+/** Handles the logic for creating and listing a user's job applications. */
 @Service
 public class JobApplicationService {
 
@@ -25,6 +26,7 @@ public class JobApplicationService {
         this.userRepository = userRepository;
     }
 
+    /** Creates an application owned by the given user and returns it as a response. */
     @Transactional
     public JobApplicationResponse create(Long userId, CreateJobApplicationRequest request){
         User user= userRepository.findById(userId).orElseThrow(() -> new ResourceNotFoundException("User not found: " + userId));
@@ -38,6 +40,7 @@ public class JobApplicationService {
         return JobApplicationResponse.from(saved);
     }
 
+    /** Returns one page of the user's applications, optionally filtered by status. */
     @Transactional(readOnly = true)
     public Page<JobApplicationResponse> list(Long userId, ApplicationStatus status, Pageable pageable){
         Page<JobApplication> page = (status==null)

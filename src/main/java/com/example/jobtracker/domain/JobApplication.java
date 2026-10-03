@@ -5,6 +5,8 @@ import jakarta.persistence.*;
 import java.time.Instant;
 import java.time.LocalDate;
 
+
+/** One job application tracked by a user, from wishlist to offer or rejection. */
 @Entity
 @Table(name = "job_applications")
 public class JobApplication {

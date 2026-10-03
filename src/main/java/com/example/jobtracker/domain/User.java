@@ -4,6 +4,7 @@ import jakarta.persistence.*;
 
 import java.time.Instant;
 
+/** A registered user who owns job applications. */
 @Entity
 @Table(name = "users") // "user" is a reserved word in PostgreSQL
 public class User {

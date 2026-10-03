@@ -7,6 +7,8 @@ import jakarta.validation.constraints.Size;
 
 import java.time.LocalDate;
 
+
+/** Data a client sends to create a job application. */
 public record CreateJobApplicationRequest(
         @NotBlank @Size(max = 150) String company,
         @NotBlank @Size(max = 150) String position,

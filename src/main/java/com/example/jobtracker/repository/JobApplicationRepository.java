@@ -11,6 +11,8 @@ import org.springframework.data.repository.query.Param;
 import java.util.List;
 import java.util.Optional;
 
+
+/** Database access for job applications; every query is scoped to one user. */
 public interface JobApplicationRepository extends JpaRepository<JobApplication, Long> {
 
     // Every query is scoped by user id so one user can never read another's data.
@@ -20,6 +22,7 @@ public interface JobApplicationRepository extends JpaRepository<JobApplication, 
 
     Optional<JobApplication> findByIdAndUserId(Long id, Long userId);
 
+    /** Returns pairs of status and count for the user's applications. */
     @Query("select a.status, count(a) from JobApplication a where a.user.id = :userId group by a.status")
     List<Object[]> countByStatusForUser(@Param("userId") Long userId);
 }
