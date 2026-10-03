@@ -5,6 +5,7 @@ import com.example.jobtracker.dto.CreateJobApplicationRequest;
 import com.example.jobtracker.dto.JobApplicationResponse;
 import com.example.jobtracker.service.JobApplicationService;
 import jakarta.validation.Valid;
+import org.springdoc.core.annotations.ParameterObject;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.http.HttpStatus;
@@ -33,7 +34,7 @@ public class JobApplicationController {
 
     /** Lists the user's applications, optionally filtered by status. */
     @GetMapping
-    public Page<JobApplicationResponse> list(@RequestParam(required = false) ApplicationStatus status, Pageable pageable){
+    public Page<JobApplicationResponse> list(@RequestParam(required = false) ApplicationStatus status, @ParameterObject Pageable pageable){
         return service.list(TEMP_USER_ID, status, pageable);
     }
 }
