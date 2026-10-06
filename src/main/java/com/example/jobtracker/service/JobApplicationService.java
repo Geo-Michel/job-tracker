@@ -4,6 +4,7 @@ import com.example.jobtracker.domain.ApplicationStatus;
 import com.example.jobtracker.domain.JobApplication;
 import com.example.jobtracker.domain.User;
 import com.example.jobtracker.dto.CreateJobApplicationRequest;
+import com.example.jobtracker.dto.UpdateJobApplicationRequest;
 import com.example.jobtracker.dto.JobApplicationResponse;
 import com.example.jobtracker.exception.ResourceNotFoundException;
 import com.example.jobtracker.repository.JobApplicationRepository;
@@ -13,7 +14,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-/** Handles the logic for creating and listing a user's job applications. */
+/** Handles the logic for creating, updating and listing a user's job applications. */
 @Service
 public class JobApplicationService {
 
@@ -48,5 +49,39 @@ public class JobApplicationService {
                 :applicationRepository.findByUserIdAndStatus(userId, status, pageable);
         return page.map(JobApplicationResponse::from);
     }
+
+    private JobApplication findOwned(Long userId, Long id) {
+        return applicationRepository.findByIdAndUserId(id, userId)
+                .orElseThrow(() -> new ResourceNotFoundException("Application not found: " + id));
+    }
+
+    /** Returns one of the user's applications, or fails with 404 if it does not exist. */
+    @Transactional(readOnly = true)
+    public JobApplicationResponse get(Long userId, Long id){
+        return JobApplicationResponse.from(findOwned(userId,id));
+    }
+
+    /** Replaces the fields of one of the user's applications. */
+    @Transactional
+    public JobApplicationResponse update(Long userId, Long id, UpdateJobApplicationRequest request){
+        JobApplication application = findOwned(userId,id);
+        application.setCompany(request.company());
+        application.setPosition(request.position());
+        application.setStatus(request.status());
+        application.setLocation(request.location());
+        application.setJobUrl(request.jobUrl());
+        application.setAppliedDate(request.appliedDate());
+        application.setNotes(request.notes());
+
+        JobApplication saved = applicationRepository.saveAndFlush(application);
+        return JobApplicationResponse.from(saved);
+    }
+
+    /** Deletes one of the user's applications. */
+    @Transactional
+    public void delete(Long userId, Long id){
+        applicationRepository.delete(findOwned(userId,id));
+    }
+
 
 }
