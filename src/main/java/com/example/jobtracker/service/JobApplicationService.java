@@ -7,12 +7,14 @@ import com.example.jobtracker.dto.CreateJobApplicationRequest;
 import com.example.jobtracker.dto.UpdateJobApplicationRequest;
 import com.example.jobtracker.dto.JobApplicationResponse;
 import com.example.jobtracker.exception.ResourceNotFoundException;
-import com.example.jobtracker.repository.JobApplicationRepository;
-import com.example.jobtracker.repository.UserRepository;
+import com.example.jobtracker.dto.repository.JobApplicationRepository;
+import com.example.jobtracker.dto.repository.UserRepository;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import java.util.List;
+import com.example.jobtracker.exception.BadRequestException;
 
 /** Handles the logic for creating, updating and listing a user's job applications. */
 @Service
@@ -20,6 +22,8 @@ public class JobApplicationService {
 
     private final JobApplicationRepository applicationRepository;
     private final UserRepository userRepository;
+    private static final List<String> SORTABLE_FIELDS =
+            List.of("createdAt", "updatedAt", "company", "position", "status", "appliedDate");
 
     public JobApplicationService(JobApplicationRepository applicationRepository,
                                  UserRepository userRepository) {
@@ -44,10 +48,20 @@ public class JobApplicationService {
     /** Returns one page of the user's applications, optionally filtered by status. */
     @Transactional(readOnly = true)
     public Page<JobApplicationResponse> list(Long userId, ApplicationStatus status, Pageable pageable){
+        validateSort(pageable);
         Page<JobApplication> page = (status==null)
                 ? applicationRepository.findByUserId(userId,pageable)
                 :applicationRepository.findByUserIdAndStatus(userId, status, pageable);
         return page.map(JobApplicationResponse::from);
+    }
+
+    private void validateSort(Pageable pageable) {
+        pageable.getSort().forEach(order -> {
+            if (!SORTABLE_FIELDS.contains(order.getProperty())) {
+                throw new BadRequestException("Cannot sort by '" + order.getProperty()
+                        + "'. Allowed fields: " + String.join(", ", SORTABLE_FIELDS));
+            }
+        });
     }
 
     private JobApplication findOwned(Long userId, Long id) {
