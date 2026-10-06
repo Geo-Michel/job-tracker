@@ -1,4 +1,4 @@
-package com.example.jobtracker.repository;
+package com.example.jobtracker.dto.repository;
 
 import com.example.jobtracker.domain.ApplicationStatus;
 import com.example.jobtracker.domain.JobApplication;

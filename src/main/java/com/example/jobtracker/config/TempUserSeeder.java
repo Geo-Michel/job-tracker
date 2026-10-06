@@ -1,7 +1,7 @@
 package com.example.jobtracker.config;
 
 import com.example.jobtracker.domain.User;
-import com.example.jobtracker.repository.UserRepository;
+import com.example.jobtracker.dto.repository.UserRepository;
 import org.springframework.boot.CommandLineRunner;
 import org.springframework.stereotype.Component;
 
