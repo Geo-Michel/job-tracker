@@ -1,4 +1,4 @@
-package com.example.jobtracker.dto.repository;
+package com.example.jobtracker.repository;
 
 import com.example.jobtracker.domain.User;
 import org.springframework.data.jpa.repository.JpaRepository;
