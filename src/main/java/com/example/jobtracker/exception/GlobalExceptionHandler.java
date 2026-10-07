@@ -70,4 +70,10 @@ public class GlobalExceptionHandler {
         ApiError body = new ApiError(Instant.now(), status.value(), status.getReasonPhrase(), message, fieldErrors);
         return ResponseEntity.status(status).body(body);
     }
+
+    /** Maps a conflict with existing data to 409. */
+    @ExceptionHandler(ConflictException.class)
+    public ResponseEntity<ApiError> handleConflict(ConflictException ex) {
+        return build(HttpStatus.CONFLICT, ex.getMessage(), null);
+    }
 }
