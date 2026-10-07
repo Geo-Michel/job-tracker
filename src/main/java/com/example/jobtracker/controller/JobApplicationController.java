@@ -1,4 +1,4 @@
-package com.example.jobtracker.domain.controller;
+package com.example.jobtracker.controller;
 
 import com.example.jobtracker.domain.ApplicationStatus;
 import com.example.jobtracker.dto.ApplicationStatsResponse;
