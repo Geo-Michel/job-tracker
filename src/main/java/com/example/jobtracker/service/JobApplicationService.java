@@ -3,6 +3,7 @@ package com.example.jobtracker.service;
 import com.example.jobtracker.domain.ApplicationStatus;
 import com.example.jobtracker.domain.JobApplication;
 import com.example.jobtracker.domain.User;
+import com.example.jobtracker.dto.ApplicationStatsResponse;
 import com.example.jobtracker.dto.CreateJobApplicationRequest;
 import com.example.jobtracker.dto.UpdateJobApplicationRequest;
 import com.example.jobtracker.dto.JobApplicationResponse;
@@ -13,6 +14,9 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import java.util.EnumMap;
+import java.util.Map;
+
 import java.util.List;
 import com.example.jobtracker.exception.BadRequestException;
 
@@ -97,5 +101,20 @@ public class JobApplicationService {
         applicationRepository.delete(findOwned(userId,id));
     }
 
-
+    /** Counts the user's applications per status; statuses with none are reported as 0. */
+    @Transactional(readOnly = true)
+    public ApplicationStatsResponse stats(Long userId) {
+        Map<ApplicationStatus, Long> byStatus = new EnumMap<>(ApplicationStatus.class);
+        for (ApplicationStatus status : ApplicationStatus.values()) {
+            byStatus.put(status, 0L);
+        }
+        long total = 0;
+        for (Object[] row : applicationRepository.countByStatusForUser(userId)) {
+            ApplicationStatus status = (ApplicationStatus) row[0];
+            long count = (Long) row[1];
+            byStatus.put(status, count);
+            total += count;
+        }
+        return new ApplicationStatsResponse(total, byStatus);
+    }
 }

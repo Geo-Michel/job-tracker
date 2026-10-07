@@ -1,6 +1,7 @@
 package com.example.jobtracker.domain.controller;
 
 import com.example.jobtracker.domain.ApplicationStatus;
+import com.example.jobtracker.dto.ApplicationStatsResponse;
 import com.example.jobtracker.dto.CreateJobApplicationRequest;
 import com.example.jobtracker.dto.UpdateJobApplicationRequest;
 import com.example.jobtracker.dto.JobApplicationResponse;
@@ -57,6 +58,12 @@ public class JobApplicationController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void delete(@PathVariable Long id) {
         service.delete(TEMP_USER_ID, id);
+    }
+
+    /** Returns how many applications the user has in each status. */
+    @GetMapping("/stats")
+    public ApplicationStatsResponse stats() {
+        return service.stats(TEMP_USER_ID);
     }
 
 }
